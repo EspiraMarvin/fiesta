@@ -3,6 +3,7 @@ import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import logger from './utils/logger';
 import userRoutes from './routes/user.routes';
+import { formatUptime } from './utils/helpers';
 
 const app = express();
 
@@ -56,7 +57,9 @@ app.use(express.json());
 app.use(express.json());
 
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', uptime: process.uptime() });
+  res
+    .status(200)
+    .json({ status: 'ok', uptime: formatUptime(process.uptime()) });
 });
 
 app.use('/api/users', userRoutes);
