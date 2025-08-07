@@ -1,18 +1,17 @@
 import winston from 'winston';
 import path from 'path';
-// import DailyRotateFile from 'winston-daily-rotate-file';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
 const logPath = path.join(__dirname, '../../logs');
 
 /** daily logs */
-/*
 const transport = new DailyRotateFile({
   filename: `${logPath}/%DATE%.log`,
   datePattern: 'YYYY-MM-DD',
   zippedArchive: true,
   maxSize: '20m',
   maxFiles: '14d',
-});*/
+});
 
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info', // environment-based log level
@@ -29,6 +28,7 @@ const logger = winston.createLogger({
       filename: `${logPath}/error.log`,
       level: `error`,
     }),
+    transport, // daily logs
   ],
 });
 
