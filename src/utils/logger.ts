@@ -14,7 +14,10 @@ const transport = new DailyRotateFile({
 });
 
 const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info', // environment-based log level
+  level:
+    process.env.NODE_ENV === 'test'
+      ? 'silent' // ignore logs in tests
+      : process.env.LOG_LEVEL || 'info', // environment-based log level
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.printf(({ timestamp, level, message }) => {

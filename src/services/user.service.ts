@@ -55,9 +55,10 @@ export async function updateUser(
   id: number,
   data: Partial<User>
 ): Promise<User | null> {
-  const user = await prisma.user
-    .update({ where: { id }, data })
-    .catch(() => null);
+  const existing = await prisma.user.findUnique({ where: { id } });
+  if (!existing) return null;
+
+  const updatedUser = await prisma.user.update({ where: { id }, data });
 
   // clear all paginated cache
   const keys = await redisClient.keys('users:offset:*:limit:*');
@@ -65,10 +66,13 @@ export async function updateUser(
     await redisClient.del(keys);
   }
 
-  return user;
+  return updatedUser;
 }
 
 export async function deleteUser(id: number): Promise<User | null> {
+  const existing = await prisma.user.findUnique({ where: { id } });
+  if (!existing) return null;
+
   const user = await prisma.user.delete({ where: { id } }).catch(() => null);
 
   const keys = await redisClient.keys('users:offset:*:limit:*');
